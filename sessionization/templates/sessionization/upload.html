@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Sessionization Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h1, h2 {
+            color: #1e3a8a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        th {
+            background: #2563eb;
+            color: white;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin: 20px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>User Sessionization Dashboard</h1>
+
+    <p>Upload your clickstream events CSV file.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="event_file" accept=".csv" required>
+        <button type="submit">Upload Events</button>
+    </form>
+
+    {% if message %}
+        <p class="message">{{ message }}</p>
+    {% endif %}
+
+    <h2>User Session Results</h2>
+
+    <table>
+        <tr>
+            <th>User ID</th>
+            <th>Session ID</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Event Count</th>
+        </tr>
+
+        {% for session in sessions %}
+        <tr>
+            <td>{{ session.user_id }}</td>
+            <td>{{ session.session_id }}</td>
+            <td>{{ session.start_time }}</td>
+            <td>{{ session.end_time }}</td>
+            <td>{{ session.event_count }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No sessions available.</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+<h2>Pipeline Run History</h2>
+
+<table border="1" cellpadding="10" cellspacing="0"
+       style="width:100%; border-collapse:collapse;">
+
+    <tr>
+        <th>Run ID</th>
+        <th>Source File</th>
+        <th>Status</th>
+        <th>Total Records</th>
+        <th>Inserted</th>
+        <th>Duplicates</th>
+        <th>Rejected</th>
+        <th>Started At</th>
+    </tr>
+
+    {% for run in runs %}
+    <tr>
+        <td>{{ run.run_id }}</td>
+        <td>{{ run.source_file }}</td>
+        <td>{{ run.status }}</td>
+        <td>{{ run.input_count }}</td>
+        <td>{{ run.inserted_count }}</td>
+        <td>{{ run.duplicate_count }}</td>
+        <td>{{ run.rejected_count }}</td>
+        <td>{{ run.started_at }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="8">No pipeline runs available.</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+
+</div>
+</body>
+</html>
